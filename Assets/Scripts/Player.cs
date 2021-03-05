@@ -17,12 +17,13 @@ public class Player : MonoBehaviour
     float count = 0;
 
     [Header("Cache Components")]
-    public ChargeBar chargeBar;
+    ChargeBar chargeBar;
     Rigidbody myRigidbody;
 
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody>();
+        chargeBar = FindObjectOfType<ChargeBar>();
 
         currentCharge = maxCharge;
         chargeBar.SetMaxCharge(maxCharge);
@@ -59,7 +60,8 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             if (transform.position.x > 0) { return; }
-            transform.position += Vector3.right * 2.5f;
+            //transform.position += Vector3.right * 2.5f;
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(2.5f, transform.position.y, transform.position.z), 2.5f);
         }
         #endregion
        
@@ -99,7 +101,6 @@ public class Player : MonoBehaviour
 
     void DealCharge(int amount)
     {
-        Debug.Log("Decrase charge");
         currentCharge += amount;
         chargeBar.SetCharge(currentCharge);
 
