@@ -16,9 +16,6 @@ public class LevelGenerator : MonoBehaviour
 
     [SerializeField] GameObject level;
 
-
-
-    // Start is called before the first frame update
     void Start()
     {
         SaveAsPrefab();    
@@ -44,7 +41,7 @@ public class LevelGenerator : MonoBehaviour
 
             string localPath = "Assets/Prefabs/Levels/Level" + currentLevel + ".prefab";
 
-            PrefabUtility.SaveAsPrefabAsset(level.gameObject, localPath);
+            //PrefabUtility.SaveAsPrefabAsset(level.gameObject, localPath);
 
             currentLevel++;
         }

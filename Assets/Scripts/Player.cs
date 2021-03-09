@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -12,17 +13,25 @@ public class Player : MonoBehaviour
     [Header("Movement Parameters")]
     [SerializeField] float forwardSpeed = 5f;
     [SerializeField] float jumpSpeed = 3f;
+    [SerializeField] float moveZpos = 3f;
 
+    bool hasHorizontalSpeed = false;
     bool isAlive = true;
+
+    float[] targetPosX = { -2.5f, 0, 2.5f };
     float count = 0;
 
-    [Header("Cache Components")]
+    int laneIndex = 1; // 0 = left lane, 1 = middle lane, 2 = right lane
+
+    // Cache Components
     ChargeBar chargeBar;
     Rigidbody myRigidbody;
+    Animator animator;
 
     void Start()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        animator = GetComponentInChildren<Animator>();
+        myRigidbody = GetComponentInChildren<Rigidbody>();
         chargeBar = FindObjectOfType<ChargeBar>();
 
         currentCharge = maxCharge;
@@ -32,9 +41,20 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (!GameSession.isGameStart) { return; }
+        if (!GameSession.isGameStart) 
+        {
+            return;
+        }
+        else
+        {
+            animator.SetTrigger("GameStart");
+        }
         if (!isAlive) { return; }
-        if(currentCharge > 0)
+
+
+
+        #region Decrease battery 1 unit per 5 seconds
+        if (currentCharge > 0)
         {
             count += Time.deltaTime;
         }
@@ -43,60 +63,70 @@ public class Player : MonoBehaviour
             DealCharge(-decraseChargePerFiveSeconds);
             count = 0;
         }
-        myRigidbody.velocity = new Vector3(0, myRigidbody.velocity.y, forwardSpeed);
-        Move();
+        #endregion
+
+        myRigidbody.velocity = new Vector3(transform.position.x, myRigidbody.velocity.y, forwardSpeed);
+
         Jump();
+
+        #region Move Left, Right
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || SwipeManager.IsSwipingLeft())
+        {
+            if (hasHorizontalSpeed) { return; } // prevent multi change lane
+
+            hasHorizontalSpeed = true;
+            
+            laneIndex--;
+            if (laneIndex < 0) { laneIndex = 0; }
+
+            StartCoroutine(Move(0.5f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow) || SwipeManager.IsSwipingRight())
+        {
+            if (hasHorizontalSpeed) { return; } // prevent multi change lane
+
+            hasHorizontalSpeed = true;
+
+            laneIndex++;
+            if (laneIndex > 2) { laneIndex = 2; }
+
+            StartCoroutine(Move(0.5f));
+        }
+
+        #endregion
     }
 
-    void Move()
+    IEnumerator Move(float duration)
     {
-        #region Keyboard Input Control
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (transform.position.x < 0) { return; }
-            transform.position += Vector3.left * 2.5f;
-        }
+        Vector3 targetPos = new Vector3(targetPosX[laneIndex], transform.position.y, transform.position.z + moveZpos);
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (transform.position.x > 0) { return; }
-            //transform.position += Vector3.right * 2.5f;
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(2.5f, transform.position.y, transform.position.z), 2.5f);
-        }
-        #endregion
-       
-        #region Touch Input Control
-        if (SwipeManager.IsSwipingLeft())
-        {
-            if (transform.position.x < 0) { return; }
-            transform.position += Vector3.left * 2.5f;
-        }
+        float time = 0;
+        Vector3 startPosition = transform.position;
 
-        if (SwipeManager.IsSwipingRight())
+        while (time < duration)
         {
-            if (transform.position.x > 0) { return; }
-            transform.position += Vector3.right * 2.5f;
+            transform.position = Vector3.Lerp(startPosition, targetPos, time / duration);
+            time += Time.deltaTime;
+            yield return null;
         }
-        #endregion
+        transform.position = targetPos;
+        hasHorizontalSpeed = false;
     }
 
     void Jump()
     {
-        // Keyboard Input Control
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || SwipeManager.IsSwipingUp())
         {
             if(transform.position.y > 1) { return; }
+
             Vector3 jumpVelocityToAdd = new Vector3(0f, jumpSpeed, 0f);
             myRigidbody.velocity += jumpVelocityToAdd;
         }
 
-        // Touch Input Control
-        if (SwipeManager.IsSwipingUp())
-        {
-            if (transform.position.y > 1) { return; }
-            Vector3 jumpVelocityToAdd = new Vector3(0f, jumpSpeed, 0f);
-            myRigidbody.velocity += jumpVelocityToAdd;
-        }
+        bool isJumping = Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon;
+        animator.SetBool("Jump", isJumping);
     }
 
     void DealCharge(int amount)
@@ -116,8 +146,10 @@ public class Player : MonoBehaviour
         if (other.gameObject.tag == "Obstacle")
         {
             Debug.Log("Player is dead");
+            animator.SetTrigger("Dying");
             GameSession.youLose = true;
             isAlive = false;
+            myRigidbody.velocity = Vector3.zero;
         }
 
         if (other.gameObject.tag == "Battery")
