@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
         {
             animator.SetTrigger("GameStart");
         }
-        if (!isAlive) { return; }
+        if (!isAlive || GameSession.youLose) { return; }
 
 
 
@@ -100,7 +100,7 @@ public class Player : MonoBehaviour
 
     IEnumerator Move(float duration)
     {
-        Vector3 targetPos = new Vector3(targetPosX[laneIndex], transform.position.y, transform.position.z + moveZpos);
+        Vector3 targetPos = new Vector3(targetPosX[laneIndex], 0, transform.position.z + moveZpos);
 
         float time = 0;
         Vector3 startPosition = transform.position;
@@ -137,6 +137,7 @@ public class Player : MonoBehaviour
         if (currentCharge <= 0)
         {
             GameSession.youLose = true;
+            animator.SetBool("isEmpty", GameSession.youLose);
             isAlive = false;
         }
     }

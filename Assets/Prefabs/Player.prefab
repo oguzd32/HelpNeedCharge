@@ -48,7 +48,7 @@ MonoBehaviour:
   maxCharge: 10
   StartingCharge: 5
   currentCharge: 0
-  decraseChargePerFiveSeconds: 2
+  decraseChargePerFiveSeconds: 1
   chargePerBattery: 1
   forwardSpeed: 7
   jumpSpeed: 6
