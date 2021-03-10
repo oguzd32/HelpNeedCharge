@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameSession : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class GameSession : MonoBehaviour
     public static bool youLose;
 
     static int levelCount = 0;
+
+    [SerializeField] Text levelText;
 
     [SerializeField] GameObject startingPanel;
     [SerializeField] GameObject youLosePanel;
@@ -19,6 +22,9 @@ public class GameSession : MonoBehaviour
         isGameStart = false;
         isGameFinish = false;
         youLose = false;
+
+        levelText.text = "Level " + levelCount.ToString();
+
         GetLevel();
     }
 
@@ -27,7 +33,6 @@ public class GameSession : MonoBehaviour
         if (youLose)
         {
             youLosePanel.SetActive(true);
-            //Time.timeScale = 0;
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -54,6 +59,10 @@ public class GameSession : MonoBehaviour
     {
         Debug.Log("Next level");
         levelCount++;
+        if (levelCount + 1 > levels.Length)
+        {
+            levelCount = 0;
+        }
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

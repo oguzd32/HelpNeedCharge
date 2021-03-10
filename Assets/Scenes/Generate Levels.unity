@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &280634492 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2783783927027429195, guid: 5d9c57ca6a4dc4b4fa4d1e350470d188, type: 3}
+  m_PrefabInstance: {fileID: 1591698704253402183}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &519653891 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4443037302308413608, guid: 03c5db5dd3473384b801160fe0074efb, type: 3}
@@ -619,6 +630,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4443037302308413608, guid: 03c5db5dd3473384b801160fe0074efb, type: 3}
+      propertyPath: levelText
+      value: 
+      objectReference: {fileID: 280634492}
     - target: {fileID: 4443037302308413608, guid: 03c5db5dd3473384b801160fe0074efb, type: 3}
       propertyPath: finishPanel
       value: 

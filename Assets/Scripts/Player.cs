@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] int decraseChargePerFiveSeconds = 1;
     [SerializeField] int chargePerBattery = 1;
 
+    [Space]
+
     [Header("Movement Parameters")]
     [SerializeField] float forwardSpeed = 5f;
     [SerializeField] float jumpSpeed = 3f;
@@ -17,10 +19,8 @@ public class Player : MonoBehaviour
 
     bool hasHorizontalSpeed = false;
     bool isAlive = true;
-
     float[] targetPosX = { -2.5f, 0, 2.5f };
     float count = 0;
-
     int laneIndex = 1; // 0 = left lane, 1 = middle lane, 2 = right lane
 
     // Cache Components
@@ -53,12 +53,12 @@ public class Player : MonoBehaviour
 
 
 
-        #region Decrease battery 1 unit per 5 seconds
+        #region Decrease battery variable unit per 5 seconds
         if (currentCharge > 0)
         {
             count += Time.deltaTime;
         }
-        while(count > 5)
+        while(count > 2)
         {
             DealCharge(-decraseChargePerFiveSeconds);
             count = 0;
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
             laneIndex--;
             if (laneIndex < 0) { laneIndex = 0; }
 
-            StartCoroutine(Move(0.5f));
+            StartCoroutine(Move(0.3f));
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow) || SwipeManager.IsSwipingRight())
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
             laneIndex++;
             if (laneIndex > 2) { laneIndex = 2; }
 
-            StartCoroutine(Move(0.5f));
+            StartCoroutine(Move(0.3f));
         }
 
         #endregion
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
         {
             transform.position = Vector3.Lerp(startPosition, targetPos, time / duration);
             time += Time.deltaTime;
-            yield return null;
+            yield return null;     
         }
         transform.position = targetPos;
         hasHorizontalSpeed = false;
@@ -119,12 +119,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) || SwipeManager.IsSwipingUp())
         {
-            if(transform.position.y > 1) { return; }
+            if(Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon) { return; }
 
             Vector3 jumpVelocityToAdd = new Vector3(0f, jumpSpeed, 0f);
             myRigidbody.velocity += jumpVelocityToAdd;
         }
-
         bool isJumping = Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon;
         animator.SetBool("Jump", isJumping);
     }

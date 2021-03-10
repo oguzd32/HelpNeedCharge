@@ -45,14 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495c8f067385dd146a9f7c1f9635dd54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxCharge: 10
-  StartingCharge: 5
+  maxCharge: 100
+  StartingCharge: 50
   currentCharge: 0
-  decraseChargePerFiveSeconds: 1
-  chargePerBattery: 1
+  decraseChargePerFiveSeconds: 2
+  chargePerBattery: 10
   forwardSpeed: 7
-  jumpSpeed: 6
-  moveZpos: 3.5
+  jumpSpeed: 5.5
+  moveZpos: 2
 --- !u!54 &5480391099597731486
 Rigidbody:
   m_ObjectHideFlags: 0
